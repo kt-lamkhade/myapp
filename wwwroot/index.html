@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Students</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    input, select, button { margin: .25rem 0; padding: .4rem; width: 100%; box-sizing: border-box; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    td, th { border: 1px solid #ccc; padding: .4rem; text-align: left; }
+  </style>
+</head>
+<body>
+  <h2>Add Student</h2>
+  <form id="f">
+    <input id="name" placeholder="Name" required>
+    <select id="gender" required>
+      <option value="">Gender</option>
+      <option>Male</option><option>Female</option><option>Other</option>
+    </select>
+    <input id="age" type="number" min="1" max="120" placeholder="Age" required>
+    <button>Save</button>
+  </form>
+  <p id="msg"></p>
+  <h2>Students</h2>
+  <table>
+    <thead><tr><th>ID</th><th>Name</th><th>Gender</th><th>Age</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+<script>
+async function load() {
+  const list = await (await fetch('/api/students')).json();
+  const rows = document.getElementById('rows');
+  rows.replaceChildren(...list.map(s => {
+    const tr = document.createElement('tr');
+    [s.id, s.name, s.gender, s.age].forEach(v => {
+      const td = document.createElement('td'); td.textContent = v; tr.append(td);
+    });
+    return tr;
+  }));
+}
+document.getElementById('f').onsubmit = async e => {
+  e.preventDefault();
+  const r = await fetch('/api/students', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      name: name.value, gender: gender.value, age: +age.value
+    })
+  });
+  msg.textContent = r.ok ? 'Saved!' : await r.text();
+  if (r.ok) { e.target.reset(); load(); }
+};
+load();
+</script>
+</body>
+</html>
