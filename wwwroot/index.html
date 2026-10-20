@@ -45,10 +45,12 @@ document.getElementById('f').onsubmit = async e => {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
-      name: name.value, gender: gender.value, age: +age.value
+      name: document.getElementById('name').value,
+      gender: document.getElementById('gender').value,
+      age: +document.getElementById('age').value
     })
   });
-  msg.textContent = r.ok ? 'Saved!' : await r.text();
+  document.getElementById('msg').textContent = r.ok ? 'Saved!' : await r.text();
   if (r.ok) { e.target.reset(); load(); }
 };
 load();
